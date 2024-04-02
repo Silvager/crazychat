@@ -1,0 +1,14 @@
+body {
+    background-color: blue;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+.message {
+    border-left: 5px solid red;
+    border-radius: 5px;
+    background-color: lightyellow;
+}
+#messagesDiv {
+    border: 3px dashed gold;
+    background-color: black;
+    width: 50%;
+}
