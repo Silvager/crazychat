@@ -1,19 +1,17 @@
 import {get as getSynonyms} from "synonyms-array";
-type WordProcessorFunction = (word: string) => string;
-const wordProcessorFunctions:Array<WordProcessorFunction> = [upperCaseWord, reverseWord, synonyminizeWord];
 
-function upperCaseWord(word:string) {
-    word = word.toUpperCase();
-    return word;
-}
-
-function reverseWord(word:string) {
-    let finalWord = "";
-    for (let letter=word.length-1; letter > -1; letter--) {
-        finalWord = finalWord + word[letter];
+function randomCapitalizeWord(word:string) {
+    let newWord = "";
+    for (let letterIndex=0; letterIndex<word.length; letterIndex++) {
+        let letter = word[letterIndex];
+        if ((Math.round(Math.random())) == 1) {
+            letter = letter.toUpperCase();
+        }
+        newWord = newWord + letter;
     }
-    return finalWord;
+    return newWord;
 }
+
 
 function synonyminizeWord(word:string) {
     let isWordCapitalized = false;
@@ -40,19 +38,13 @@ function synonyminizeWord(word:string) {
         return wordToReturn;
     } else {
         return isWordCapitalized ? reCapitalizeWord(word) : word;
-        return word;
     }
 } 
 
 
 
-
-
-
 function processWord(word:string):string {
-    // let processorFunction = wordProcessorFunctions[Math.floor(Math.random()*wordProcessorFunctions.length)];
-    // return processorFunction(word);
-    return synonyminizeWord(word);
+    return randomCapitalizeWord(synonyminizeWord(word));
 }
 
 function processText(text:string):string {
