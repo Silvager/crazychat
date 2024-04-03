@@ -1,15 +1,16 @@
-import InputBox from './input.tsx';
 import { useEffect, useRef, useState } from 'react';
 import { FirebaseApp, initializeApp } from "firebase/app";
-import { Database, getDatabase, onValue, ref, set } from 'firebase/database';
+import { Database, getDatabase, onValue, ref } from 'firebase/database';
 
-import processText from './processtext.ts';
-
+import { Chat } from './chat.tsx';
+import { Auth, getAuth, signInAnonymously } from 'firebase/auth';
+import Login from './login.tsx';
 function App() {
   const [messages, setMessages] = useState(new Array<string>);
   const [connected, setConnected] = useState(false);
   const [error, setError] = useState<string>();
-  const MAX_MESSAGES = 10;
+  const [username, setUsername] = useState<string>();
+  const [loggedIn, setLoggedIn] = useState(false);
   const firebaseConfig = {
     apiKey: "AIzaSyCZghDGcpsVmY_3gtoUkbnIp0AiGKZpu8A",
     authDomain: "crazychat-bf465.firebaseapp.com",
@@ -21,19 +22,26 @@ function App() {
   };
   const appRef=useRef<FirebaseApp>();
   const dbRef=useRef<Database>();
+  const authRef=useRef<Auth>();
 
   function connectToFirebase() {
+      //Initialize firebase
       appRef.current = initializeApp(firebaseConfig);
       if (appRef.current) {
-        setConnected(true);
         dbRef.current = getDatabase(appRef.current);
         if (!dbRef.current) {setError("no database")}
         else {
-          const messagesRef = ref(dbRef.current, 'messages/');
-          onValue(messagesRef, (snapshot) => {
+          //If there is a database
+          authRef.current = getAuth();
+          signInAnonymously(authRef.current).then(() => {
+            // If authenticated properly
+            setConnected(true);
+            const messagesRef = ref(dbRef.current!, 'messages/');
+            onValue(messagesRef, (snapshot) => {
             const data = snapshot.val();
             setMessages(data);
           })
+          }).catch(() => {setError("Authentication error")});
         }
       } else {
         setError("no app");
@@ -42,40 +50,21 @@ function App() {
   useEffect(() => {
     connectToFirebase();
   }, []);
-
-  function newMessage(message:string):void {
-    message = processText(message);
-    let newMessages:Array<string> = messages ? [...messages] : [];
-    newMessages.push(message);
-    if (newMessages.length > MAX_MESSAGES) {
-      newMessages.shift();
-    }
-    set(ref(dbRef.current!, 'messages/'), newMessages);
-  }
-  function getMessagesSection() {
-    if (!messages) {return('')}
-    let paragraphs = [];
-    for (let i=messages.length-1; i > -1; i--) {
-      paragraphs.push(<p className='message'>{messages[i]}</p>);
-    }
-    return (<div id='messagesDiv'>
-      {paragraphs}
-    </div>)
-  }
+  //Go through and return various things depending on the state
   if (error) {
     return (<p>{error}</p>);
   }
   if (!connected) {
     return (<p>Loadin'</p>);
   }
-
-  return (
-
-    <>
-    <InputBox newMessage={newMessage} placeholder='Type here or you will be sorry'></InputBox>
-    {getMessagesSection()}
-    </>
-  );
+  if (!loggedIn) {
+    return <Login setUsername={setUsername} setLoggedIn={setLoggedIn}></Login>
+  } else {
+    //If the user is logged in
+    return (
+      <Chat database={dbRef.current} username={username!} messages={messages} ></Chat>
+    )
+  }
 }
 
 export default App
