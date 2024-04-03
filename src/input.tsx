@@ -1,14 +1,25 @@
-function InputBox({ newMessage }) {
-    function buttonClicked() {
-        let textBox = document.getElementById("textBox") as HTMLInputElement;
-        newMessage(textBox.value);
-        textBox.value = "";
+import { useRef } from "react";
+
+interface Props {
+    newMessage: (text: string) => void;
+    placeholder:string;
+}
+
+function InputBox({ newMessage, placeholder }:Props) {
+    const textRef = useRef<HTMLInputElement | null>(null);
+    function buttonClicked(e:React.ChangeEvent<HTMLFormElement>) {
+        e.preventDefault();
+        const textValue = (textRef.current?.value ?? '').trim();
+        if (textValue.length > 0) {
+            newMessage(textValue);
+            textRef.current!.value = "";
+        }
     }
     return(
-        <div id="inputBox">
-            <input type="text" id="textBox"></input>
-            <button onClick={buttonClicked}>Send</button>
-        </div>
+        <form id="inputBox" onSubmit={buttonClicked}>
+            <input type="text" ref={textRef} placeholder={placeholder}></input>
+            <button type='submit'>Send</button>
+        </form>
     );
 }
 export default InputBox;
