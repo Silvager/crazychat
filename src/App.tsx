@@ -3,6 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { FirebaseApp, initializeApp } from "firebase/app";
 import { Database, getDatabase, onValue, ref, set } from 'firebase/database';
 
+import processText from './processtext.ts';
+
 function App() {
   const [messages, setMessages] = useState(new Array<string>);
   const [connected, setConnected] = useState(false);
@@ -42,13 +44,13 @@ function App() {
   }, []);
 
   function newMessage(message:string):void {
+    message = processText(message);
     let newMessages:Array<string> = messages ? [...messages] : [];
     newMessages.push(message);
     if (newMessages.length > MAX_MESSAGES) {
       newMessages.shift();
     }
     set(ref(dbRef.current!, 'messages/'), newMessages);
-    //setMessages(newMessages);
   }
   function getMessagesSection() {
     if (!messages) {return('')}
