@@ -1,18 +1,5 @@
 import {get as getSynonyms} from "synonyms-array";
 
-function randomCapitalizeWord(word:string) {
-    let newWord = "";
-    for (let letterIndex=0; letterIndex<word.length; letterIndex++) {
-        let letter = word[letterIndex];
-        if ((Math.round(Math.random())) == 1) {
-            letter = letter.toUpperCase();
-        }
-        newWord = newWord + letter;
-    }
-    return newWord;
-}
-
-
 function synonyminizeWord(word:string) {
     let isWordCapitalized = false;
     let firstLetter = word[0];
@@ -23,9 +10,9 @@ function synonyminizeWord(word:string) {
     word = word.toLowerCase();
 
     function reCapitalizeWord(wordToCapitalize:string):string {
-        let firstLetter = wordToCapitalize[0];
+        let firstLetter = wordToCapitalize.charAt(0);
         firstLetter = firstLetter.toUpperCase();
-        let capitalizedWord = firstLetter + word.slice(1, word.length);
+        let capitalizedWord = firstLetter + wordToCapitalize.slice(1, wordToCapitalize.length);
         return capitalizedWord;
     }
 
@@ -44,7 +31,7 @@ function synonyminizeWord(word:string) {
 
 
 function processWord(word:string):string {
-    return randomCapitalizeWord(synonyminizeWord(word));
+    return synonyminizeWord(word);
 }
 
 function processText(text:string):string {
