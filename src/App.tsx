@@ -5,6 +5,7 @@ import { Database, getDatabase, onValue, ref } from 'firebase/database';
 import { Chat } from './chat.tsx';
 import { Auth, getAuth, signInAnonymously } from 'firebase/auth';
 import Login from './login.tsx';
+import ThreeD from './threeD.tsx';
 function App() {
   const [messages, setMessages] = useState(new Array<string>);
   const [connected, setConnected] = useState(false);
@@ -62,7 +63,10 @@ function App() {
   } else {
     //If the user is logged in
     return (
+      <>
       <Chat database={dbRef.current} username={username!} messages={messages} ></Chat>
+      <ThreeD></ThreeD>
+      </>
     )
   }
 }

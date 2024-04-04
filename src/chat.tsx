@@ -23,7 +23,7 @@ function Chat( {database, username, messages }:Props ) {
     if (!messages) {return('')}
     let paragraphs = [];
     for (let i=messages.length-1; i > -1; i--) {
-      paragraphs.push(<p className='message'>{messages[i]}</p>);
+      paragraphs.push(<p className='message' key={i}>{messages[i]}</p>);
     }
     return (<div id='messagesDiv'>
       {paragraphs}
